@@ -74,8 +74,8 @@ class MainWindow(QWidget):
             vbox = QVBoxLayout()
             self.schedule_vbox.append(vbox)
             table = QTableWidget()
-            table.setColumnCount(8)
-            table.setHorizontalHeaderLabels(["id", "day", "subject", "start_time", "parity", "room_numb"])
+            table.setColumnCount(7)
+            table.setHorizontalHeaderLabels(["id", "subject", "start_time", "parity", "room_numb"])
             self.schedule_vbox[i].addWidget(table)
             self.schedule_tables.append(table)
 
@@ -94,19 +94,18 @@ class MainWindow(QWidget):
                 deleteButton = QPushButton("Delete")
 
                 table.setItem(j, 0, QTableWidgetItem(str(r[0])))
-                table.setItem(j, 1, QTableWidgetItem(str(r[1])))
-                table.setItem(j, 2, QTableWidgetItem(str(r[2])))
-                table.setItem(j, 3, QTableWidgetItem(str(r[3])))
-                table.setItem(j, 4, QTableWidgetItem(str(r[4])))
-                table.setItem(j, 5, QTableWidgetItem(str(r[5])))
-                table.setCellWidget(j, 6, joinButton)
-                table.setCellWidget(j, 7, deleteButton)
+                table.setItem(j, 1, QTableWidgetItem(str(r[2])))
+                table.setItem(j, 2, QTableWidgetItem(str(r[3])))
+                table.setItem(j, 3, QTableWidgetItem(str(r[4])))
+                table.setItem(j, 4, QTableWidgetItem(str(r[5])))
+                table.setCellWidget(j, 5, joinButton)
+                table.setCellWidget(j, 6, deleteButton)
 
                 joinButton.clicked.connect(lambda ch, num1=i, num2=j: self._edit_timetable(num1, num2))
                 deleteButton.clicked.connect(lambda ch, num1=i, num2=j: self._delete_from_timetable(num1, num2))
 
             joinButton = QPushButton("Join")
-            table.setCellWidget(len(records), 6, joinButton)
+            table.setCellWidget(len(records), 5, joinButton)
             joinButton.clicked.connect(lambda ch, num1=i, num2=len(records): self._add_to_timetable(num1, num2))
             table.resizeRowsToContents()
     def _add_to_timetable(self, num1, num2):
@@ -121,7 +120,7 @@ class MainWindow(QWidget):
         try:
             columns = ["id", "day", "subject", "start_time", "parity", "room_numb"]
             self.cursor.execute(
-                f"INSERT INTO timetable({columns[0]}, {columns[1]}, {columns[2]}, {columns[3]}, {columns[4]}, {columns[5]}) values('{row[0]}', '{row[1]}', '{row[2]}', '{row[3]}', '{row[4]}', '{row[5]}')")
+                f"INSERT INTO timetable({columns[0]}, {columns[1]}, {columns[2]}, {columns[3]}, {columns[4]}, {columns[5]}) values('{row[0]}', '{self.week_day[num1]}', '{row[1]}', '{row[2]}', '{row[3]}', '{row[4]}')")
             self.conn.commit()
         except:
             QMessageBox.about(self, "Error", "Enter all fields")
@@ -317,7 +316,9 @@ class MainWindow(QWidget):
             deleteButton.clicked.connect(lambda ch, num=i: self._delete_from_subjects_table(num))
 
         joinButton = QPushButton("Join")
+        self.subjects_table.setItem(len(records), 0,  QTableWidgetItem(""))
         self.subjects_table.setCellWidget(len(records), 1, joinButton)
+        self.subjects_table.setItem(len(records), 2, QTableWidgetItem())
         joinButton.clicked.connect(lambda ch, num=len(records): self._add_to_subjects_table(num))
 
         self.subjects_table.resizeRowsToContents()
