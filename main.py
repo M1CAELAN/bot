@@ -105,7 +105,14 @@ class MainWindow(QWidget):
                 deleteButton.clicked.connect(lambda ch, num1=i, num2=j: self._delete_from_timetable(num1, num2))
 
             joinButton = QPushButton("Join")
+            deleteButton = QPushButton()
+            table.setItem(len(records), 0, QTableWidgetItem(""))
+            table.setItem(len(records), 1, QTableWidgetItem(""))
+            table.setItem(len(records), 2, QTableWidgetItem(""))
+            table.setItem(len(records), 3, QTableWidgetItem(""))
+            table.setItem(len(records), 4, QTableWidgetItem(""))
             table.setCellWidget(len(records), 5, joinButton)
+            table.setCellWidget(len(records), 6, deleteButton.hide())
             joinButton.clicked.connect(lambda ch, num1=i, num2=len(records): self._add_to_timetable(num1, num2))
             table.resizeRowsToContents()
     def _add_to_timetable(self, num1, num2):
@@ -210,7 +217,12 @@ class MainWindow(QWidget):
             deleteButton.clicked.connect(lambda ch, num=i: self._delete_from_teachers_table(num))
 
         joinButton = QPushButton("Join")
+        deleteButton = QPushButton()
+        self.teachers_table.setItem(len(records), 0, QTableWidgetItem(""))
+        self.teachers_table.setItem(len(records), 1, QTableWidgetItem(""))
+        self.teachers_table.setItem(len(records), 2, QTableWidgetItem(""))
         self.teachers_table.setCellWidget(len(records), 3, joinButton)
+        self.teachers_table.setCellWidget(len(records), 4, deleteButton.hide())
         joinButton.clicked.connect(lambda ch, num=len(records): self._add_to_teachers_table(num))
 
         self.teachers_table.resizeRowsToContents()
@@ -316,9 +328,10 @@ class MainWindow(QWidget):
             deleteButton.clicked.connect(lambda ch, num=i: self._delete_from_subjects_table(num))
 
         joinButton = QPushButton("Join")
+        deleteButton = QPushButton()
         self.subjects_table.setItem(len(records), 0,  QTableWidgetItem(""))
         self.subjects_table.setCellWidget(len(records), 1, joinButton)
-        self.subjects_table.setItem(len(records), 2, QTableWidgetItem())
+        self.subjects_table.setCellWidget(len(records), 2, deleteButton.hide())
         joinButton.clicked.connect(lambda ch, num=len(records): self._add_to_subjects_table(num))
 
         self.subjects_table.resizeRowsToContents()
@@ -342,7 +355,7 @@ class MainWindow(QWidget):
         row = self.subjects_table.item(num, 0).text()
         print(row)
         try:
-            self.cursor.execute(f"DELETE from subject where name = '{row}'")
+            self.cursor.execute("DELETE from subject where name=%s", (row,))
             self.conn.commit()
         except:
             QMessageBox.about(self, "Error", "Данный предмет нельзя удалить")
