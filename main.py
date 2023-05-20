@@ -140,7 +140,7 @@ class MainWindow(QWidget):
             except:
                 row.append(None)
         try:
-            columns = ["id", "day", "subject", "start_time", "parity", "room_numb"]
+            columns = ["id", "subject", "start_time", "parity", "room_numb"]
             for i in range(1, 5):
                 self.cursor.execute(f"UPDATE timetable SET {columns[i]} = '{row[i]}' WHERE id = '{row[0]}'")
                 self.conn.commit()
@@ -324,7 +324,7 @@ class MainWindow(QWidget):
             self.subjects_table.setCellWidget(i, 1, joinButton)
             self.subjects_table.setCellWidget(i, 2, deleteButton)
 
-            joinButton.clicked.connect(lambda ch, num=i: self._edit_subjects_table(num))
+            joinButton.clicked.connect(lambda ch, num=i, old=str(r[0]): self._edit_subjects_table(num, old))
             deleteButton.clicked.connect(lambda ch, num=i: self._delete_from_subjects_table(num))
 
         joinButton = QPushButton("Join")
@@ -336,7 +336,7 @@ class MainWindow(QWidget):
 
         self.subjects_table.resizeRowsToContents()
 
-    def _edit_subjects_table(self, num):
+    def _edit_subjects_table(self, num, old):
         row = list()
         for i in range(self.subjects_table.columnCount()):
             try:
@@ -346,7 +346,7 @@ class MainWindow(QWidget):
         print(row, num)
         try:
             columns = ["name"]
-            self.cursor.execute(f"UPDATE subject SET {columns[0]} = '{row[0]}' WHERE name = '{row[0]}'")
+            self.cursor.execute(f"UPDATE subject SET {columns[0]} = '{row[0]}' WHERE name = '{old}'")
             self.conn.commit()
         except:
             QMessageBox.about(self, "Error", "Enter all fields")
